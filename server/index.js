@@ -1,5 +1,5 @@
 const express = require("express");
-const sql = require("mssql");
+const mssql = require("mssql");
 const app = express();
 
 require("dotenv").config();
@@ -15,7 +15,7 @@ var config = {
   },
 };
 
-sql.connect(config, (err) => {
+mssql.connect(config, (err) => {
   if (err) {
     throw err;
   }
