@@ -1,26 +1,13 @@
 const express = require("express");
-const mssql = require("mssql");
 const app = express();
 
 require("dotenv").config();
 
 const PORT = process.env.PORT;
-var config = {
-  user: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  server: process.env.DB_SERVER,
-  database: process.env.DB_NAME,
-  options: {
-    encrypt: false,
-  },
-};
 
-mssql.connect(config, (err) => {
-  if (err) {
-    throw err;
-  }
-  console.log("Connection Successful!");
-});
+const userRouter = require("./src/routes/userRouter");
+
+app.use("/api/user", userRouter);
 
 app.use("/", (req, res) => {
   res.send("Hello World!");
