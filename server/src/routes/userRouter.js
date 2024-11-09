@@ -4,5 +4,6 @@ const router = express.Router();
 
 router.get("/", userControllers.read);
 router.post("/create", userControllers.create);
+router.post("/updateUser/:userId", userControllers.update);
 
 module.exports = router;
