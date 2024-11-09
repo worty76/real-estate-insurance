@@ -37,7 +37,7 @@ const create = async (req, res) => {
       .json({ message: "Error creating user", error: error.message });
   }
 };
-const updateUser = async (req, res) => {
+const update = async (req, res) => {
   const userId = req.params.userId;
   const { name, birthOfYear, phone, email, address } = req.body;
 
@@ -48,7 +48,7 @@ const updateUser = async (req, res) => {
       .request()
       .input("userId", mssql.Int, userId)
       .query("SELECT COUNT(*) as count FROM users WHERE userId = @userId");
-    
+
     if (userExists.recordset[0].count === 0) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -60,8 +60,7 @@ const updateUser = async (req, res) => {
       .input("birthOfYear", mssql.DateTime, birthOfYear)
       .input("phone", mssql.VarChar, phone)
       .input("email", mssql.VarChar, email)
-      .input("address", mssql.VarChar, address)
-      .query(`
+      .input("address", mssql.VarChar, address).query(`
         UPDATE users 
         SET name = @name,
             birthOfYear = @birthOfYear,
@@ -76,16 +75,17 @@ const updateUser = async (req, res) => {
       message: "User updated successfully",
       user: result.recordset[0],
     });
-
   } catch (error) {
-    res.status(500).json({ message: "Error updating user", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error updating user", error: error.message });
   }
 };
 
 const userControllers = {
   read,
   create,
-  updateUser,
+  update,
 };
 
 module.exports = {
