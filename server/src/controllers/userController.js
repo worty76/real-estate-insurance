@@ -81,11 +81,43 @@ const update = async (req, res) => {
       .json({ message: "Error updating user", error: error.message });
   }
 };
+const deleteUser = async (req, res) => {
+  const userId = req.params.userId;
 
+  try {
+    const pool = await poolPromise;
+
+    // Check if user exists
+    const userExists = await pool
+      .request()
+      .input("userId", mssql.Int, userId)
+      .query("SELECT COUNT(*) as count FROM users WHERE userId = @userId");
+
+    if (userExists.recordset[0].count === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Delete the user
+    const result = await pool
+      .request()
+      .input("userId", mssql.Int, userId)
+      .query("DELETE FROM users OUTPUT DELETED.* WHERE userId = @userId");
+
+    res.status(200).json({
+      message: "User deleted successfully",
+      user: result.recordset[0],
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error deleting user", error: error.message });
+  }
+};
 const userControllers = {
   read,
   create,
   update,
+  deleteUser
 };
 
 module.exports = {
